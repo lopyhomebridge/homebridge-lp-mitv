@@ -1,15 +1,39 @@
 {
-  "pluginAlias": "ExampleHomebridgePlugin",
+  "pluginAlias": "MITVPlatformForLopy",
   "pluginType": "platform",
   "singular": true,
   "schema": {
     "type": "object",
+    "required": [],
     "properties": {
-      "name": {
-        "title": "Name",
-        "type": "string",
-        "required": true,
-        "default": "Example Dynamic Platform"
+      "tvList": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [],
+          "properties": {
+            "title": {
+              "title": "电视名称",
+              "type": "string",
+              "default": "TV001",
+              "required": true,
+              "description": "电视机名称，为了区分多个"
+            },
+            "ip": {
+              "title": "IP地址",
+              "type": "string",
+              "required": true,
+              "description": "电视机的ip，最好设为固定ip"
+            },
+            "port": {
+              "title": "API端口",
+              "type": "number",
+              "default": 6095,
+              "required": true,
+              "description": "电视机的api端口，默认为6095"
+            }
+          }
+        }
       }
     }
   }

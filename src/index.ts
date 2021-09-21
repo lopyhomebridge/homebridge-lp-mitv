@@ -1,11 +1,15 @@
 import { API } from 'homebridge';
 
 import { PLATFORM_NAME } from './settings';
-import { ExampleHomebridgePlatform } from './platform';
+import { MITVHomebridgePlatform } from './platform';
+// import { MITVHomebridgePlugin } from './plugin';
 
 /**
  * This method registers the platform with Homebridge
  */
 export = (api: API) => {
-  api.registerPlatform(PLATFORM_NAME, ExampleHomebridgePlatform);
+  // let a = new Logger()
+  // .debug('001 PLATFORM_NAME: ',PLATFORM_NAME);
+  api.registerPlatform(PLATFORM_NAME, MITVHomebridgePlatform);
+  // api.registerPlatform(PLATFORM_NAME, MITVHomebridgePlugin);
 };
