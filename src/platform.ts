@@ -21,22 +21,22 @@ export class MITVHomebridgePlatform implements DynamicPlatformPlugin {
     public readonly api: API,
   ) {
 
-    this.log.info('######################## init start');
-    this.log.info('######################## config ', this.config);
-    this.log.debug('Finished initializing platform:', this.config.name);
+      this.log.info('######################## init start');
+      this.log.info('######################## config ', this.config);
+      this.log.debug('Finished initializing platform:', this.config.name);
 
-    // When this event is fired it means Homebridge has restored all cached accessories from disk.
-    // Dynamic Platform plugins should only register new accessories after this event was fired,
-    // in order to ensure they weren't added to homebridge already. This event can also be used
-    // to start discovery of new accessories.
-    this.api.on('didFinishLaunching', () => {
-      log.info('Executed didFinishLaunching callback');
-      log.debug('Executed didFinishLaunching callback');
-      // run the method to discover / register your devices as accessories
-      this.discoverDevices();
+      // When this event is fired it means Homebridge has restored all cached accessories from disk.
+      // Dynamic Platform plugins should only register new accessories after this event was fired,
+      // in order to ensure they weren't added to homebridge already. This event can also be used
+      // to start discovery of new accessories.
+      this.api.on('didFinishLaunching', () => {
+          log.info('Executed didFinishLaunching callback');
+          log.debug('Executed didFinishLaunching callback');
+          // run the method to discover / register your devices as accessories
+          this.discoverDevices();
 
       // 开始发现
-    });
+      });
   }
 
   /**
@@ -44,10 +44,10 @@ export class MITVHomebridgePlatform implements DynamicPlatformPlugin {
    * It should be used to setup event handlers for characteristics and update respective values.
    */
   configureAccessory(accessory: PlatformAccessory) {
-    this.log.info('Loading accessory from cache:', accessory.displayName);
+      this.log.info('Loading accessory from cache:', accessory.displayName);
 
-    // add the restored accessory to the accessories cache so we can track if it has already been registered
-    this.accessories.push(accessory);
+      // add the restored accessory to the accessories cache so we can track if it has already been registered
+      this.accessories.push(accessory);
   }
 
   /**
@@ -57,58 +57,64 @@ export class MITVHomebridgePlatform implements DynamicPlatformPlugin {
    */
   discoverDevices() {
 
-    // EXAMPLE ONLY
-    // A real plugin you would discover accessories from the local network, cloud services
-    // or a user-defined array in the platform config.
+      // EXAMPLE ONLY
+      // A real plugin you would discover accessories from the local network, cloud services
+      // or a user-defined array in the platform config.
 
 
-    // loop over the discovered devices and register each one if it has not already been registered
-    for (const device of this.config.tvList) {
+      // loop over the discovered devices and register each one if it has not already been registered
+      for (const device of this.config.tvList) {
 
-      // generate a unique id for the accessory this should be generated from
-      // something globally unique, but constant, for example, the device serial
-      // number or MAC address
-      const uuid = this.api.hap.uuid.generate(device.ip + ':' +device.port.toString());
+          // generate a unique id for the accessory this should be generated from
+          // something globally unique, but constant, for example, the device serial
+          // number or MAC address
+          const uuid = this.api.hap.uuid.generate(`${device.title}-${device.ip}:${device.port}`);
 
-      // see if an accessory with the same uuid has already been registered and restored from
-      // the cached devices we stored in the `configureAccessory` method above
-      const existingAccessory = this.accessories.find(accessory => accessory.UUID === uuid);
+          // see if an accessory with the same uuid has already been registered and restored from
+          // the cached devices we stored in the `configureAccessory` method above
+          const existingAccessory = this.accessories.find(accessory => accessory.UUID === uuid);
 
-      if (existingAccessory) {
-        // the accessory already exists
-        this.log.info('Restoring existing accessory from cache:', existingAccessory.displayName);
+          if (existingAccessory) {
+              // the accessory already exists
+              this.log.info('Restoring existing accessory from cache:', existingAccessory.displayName);
 
-        // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
-        // existingAccessory.context.device = device;
-        // this.api.updatePlatformAccessories([existingAccessory]);
+              // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
+              // existingAccessory.context.device = device;
+              // this.api.updatePlatformAccessories([existingAccessory]);
 
-        // create the accessory handler for the restored accessory
-        // this is imported from `platformAccessory.ts`
-        new MITVPlatformAccessory(this, existingAccessory);
+              // create the accessory handler for the restored accessory
+              // this is imported from `platformAccessory.ts`
+              new MITVPlatformAccessory(this, existingAccessory);
 
-        // it is possible to remove platform accessories at any time using `api.unregisterPlatformAccessories`, eg.:
-        // remove platform accessories when no longer present
-        // this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [existingAccessory]);
-        // this.log.info('Removing existing accessory from cache:', existingAccessory.displayName);
-      } else {
-        // the accessory does not yet exist, so we need to create it
-        this.log.info('Adding new accessory:', device.title);
+              // it is possible to remove platform accessories at any time using `api.unregisterPlatformAccessories`, eg.:
+              // remove platform accessories when no longer present
+              // this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [existingAccessory]);
+              // this.log.info('Removing existing accessory from cache:', existingAccessory.displayName);
+          } else {
+              // the accessory does not yet exist, so we need to create it
+              this.log.info('Adding new accessory:', device.title);
 
-        // create a new accessory
-        // const accessory = new this.api.platformAccessory(device.title, uuid);
-        const accessory = new this.api.platformAccessory(device.title, uuid, this.api.hap.Categories.TELEVISION);
+              // create a new accessory
+              // const accessory = new this.api.platformAccessory(device.title, uuid);
+              // const accessory = new this.api.platformAccessory(device.title, uuid, this.api.hap.Categories.TELEVISION);
+              const accessory = new this.api.platformAccessory(device.title, uuid, this.api.hap.Categories.TELEVISION);
+              accessory.category = this.api.hap.Categories.TELEVISION;
 
-        // store a copy of the device object in the `accessory.context`
-        // the `context` property can be used to store any data about the accessory you may need
-        accessory.context.device = device;
+              // store a copy of the device object in the `accessory.context`
+              // the `context` property can be used to store any data about the accessory you may need
+              accessory.context.device = device;
 
-        // create the accessory handler for the newly create accessory
-        // this is imported from `platformAccessory.ts`
-        new MITVPlatformAccessory(this, accessory);
+              // create the accessory handler for the newly create accessory
+              // this is imported from `platformAccessory.ts`
+              new MITVPlatformAccessory(this, accessory);
 
-        // link the accessory to your platform
-        this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+              // link the accessory to your platform
+
+              this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
+
+              // this not work
+            //   this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
+          }
       }
-    }
   }
 }

@@ -1,6 +1,5 @@
-import fetch from 'node-fetch';
-import AbortController from 'abort-controller';
 import url from 'url';
+import http from 'http';
 import { Logger } from 'homebridge';
 
 export interface ApiAdapter {
@@ -9,123 +8,164 @@ export interface ApiAdapter {
     query(): { [key: string]: string };
 
     // result()
+    /**
+     *
+     * @param data any
+     */
     setResult(data : any) ;
 }
 
 
 export class AlivedAdapter implements ApiAdapter {
-  uri(): string {
-    return '/request';
-  }
+    uri(): string {
+        return '/request';
+    }
 
-  query(): { [key: string]: string } {
-    return {
-      'action': 'isalive',
-    };
-  }
+    query(): { [key: string]: string } {
+        return {
+            'action': 'isalive',
+        };
+    }
 
-  setResult(data : any) {
+    setResult(data : any) {
 
-
-    return;
-  }
+        return;
+    }
 }
 
 export class EventKeyAdapter implements ApiAdapter {
-  constructor(public readonly keyCode:string){
+    constructor(public readonly keyCode:string){
 
-  }
+    }
 
-  uri(): string {
-    return '/controller';
-  }
+    uri(): string {
+        return '/controller';
+    }
 
-  query(): { [key: string]: string } {
-    return {
-      'action': 'keyevent',
-      'keycode': this.keyCode,
-    };
-  }
+    query(): { [key: string]: string } {
+        return {
+            'action': 'keyevent',
+            'keycode': this.keyCode,
+        };
+    }
 
-  setResult(data : any) {
+    setResult(data : any) {
 
 
-    return;
-  }
+        return;
+    }
+}
+export class CheckSourceAdapter implements ApiAdapter {
+    constructor(public readonly source:string){
+
+    }
+
+    uri(): string {
+        return '/controller';
+    }
+
+    query(): { [key: string]: string } {
+        return {
+            'action': 'changesource',
+            'source': this.source,
+        };
+    }
+
+    setResult(data : any) {
+
+
+        return;
+    }
 }
 
 
+async function requestData(urlObj, timeout):Promise<string>{
+    timeout = timeout || 1000;
+    return new Promise((resolve, reject)=>{
 
-export class Client {
+        urlObj.timeout = timeout;
 
-  constructor(
+        // create a request
+        const request = http.request(urlObj, response => {
+            // your callback here
+
+            response.on('data', (data)=> {
+                resolve(data.toString());
+            });
+        });
+
+        request.on('error', error => {
+            reject(error);
+        });
+
+        // use its "timeout" event to abort the request
+        request.on('timeout', () => {
+            request.destroy();
+            reject(new Error('timeout'));
+        });
+        request.end();
+    });
+}
+
+export class MIApiClient {
+
+    constructor(
         public readonly ip: string,
         public readonly port: number,
         public readonly logger: Logger,
-  ) {
+    ) {
 
 
-  }
+    }
 
-  /**
+    /**
    *
    * @param adaptor
    */
-  async exec(adaptor: ApiAdapter) {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => {
-      controller.abort();
-    }, 500);
+    async exec(adaptor: ApiAdapter) {
 
-    // url
+        // url
+        const urlObj = new url.URL('http://' + this.ip);
+        urlObj.port = this.port.toString();
+        urlObj.pathname = adaptor.uri();
+        const query = urlObj.searchParams;
 
-    const a = new url.URL('http://' + this.ip);
-    a.port = this.port.toString();
-    a.pathname = adaptor.uri();
-    const query = a.searchParams;
+        const queryObj = adaptor.query();
+        for (const k in queryObj){
 
-    const q = adaptor.query();
-    for (const k in q){
+            query.set(k, queryObj[k]);
+        }
+        urlObj.search = query.toString();
 
-      query.set(k, q[k]);
+
+        try {
+
+            this.logger.debug('miapi request: [', urlObj.toString(), ']');
+
+            const response = await requestData(urlObj, 500);
+
+            const data = JSON.parse(response);
+
+            this.logger.debug('request respose: ', data);
+
+            //
+            if (data.status !== 0){
+                throw new Error('api error');
+            }
+
+            if(typeof data.data === 'undefined'){
+                data['data'] = {};
+            }
+            adaptor.setResult(data.data);
+
+        } catch (error) {
+
+            if(error instanceof Error){
+                throw error;
+            }else{
+                throw new Error('unknow error');
+            }
+
+        }
     }
-    a.search = query.toString();
-
-    const urlFull = a.toString();
-
-    console.log(urlFull);
-    this.logger.debug('api url: ', urlFull);
-    try {
-      const response = await fetch(urlFull, { signal: controller.signal });
-      const data :any = await response.json();
-
-      //
-      console.log('data: ', data);
-      this.logger.debug('api url: ', data);
-      if (data.code !== 0){
-        throw new Error('api error');
-      }
-
-
-      //   if (data.msg !== 'success'){
-      //     throw new Error('api failed');
-      //   }
-
-
-      adaptor.setResult(data.data);
-
-    } catch (error) {
-
-      throw new Error('hehe');
-    } finally {
-      clearTimeout(timeout);
-    }
-  }
 }
-
-
-
-export class MITVHomebridgePlatform {
-
-}
-

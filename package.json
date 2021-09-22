@@ -1,5 +1,4 @@
 {
-  "private": true,
   "displayName": "MITV by Lopy",
   "name": "homebridge-lp-mitv",
   "version": "1.0.0",
@@ -26,12 +25,9 @@
   "keywords": [
     "homebridge-plugin"
   ],
-  "dependencies": {
-    "abort-controller": "^3.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/node": "^14.14.31",
-    "@types/node-fetch": "^3.0.3",
     "@typescript-eslint/eslint-plugin": "^4.16.1",
     "@typescript-eslint/parser": "^4.16.1",
     "eslint": "^7.21.0",
