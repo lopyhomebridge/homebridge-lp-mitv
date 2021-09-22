@@ -113,7 +113,7 @@ export class MITVHomebridgePlatform implements DynamicPlatformPlugin {
               this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
 
               // this not work
-            //   this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
+              // this.api.publishExternalAccessories(PLUGIN_NAME, [accessory]);
           }
       }
   }

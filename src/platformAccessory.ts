@@ -2,7 +2,6 @@ import { Service, PlatformAccessory, CharacteristicValue } from 'homebridge';
 import { AlivedAdapter, ApiAdapter, CheckSourceAdapter, EventKeyAdapter, MIApiClient } from './mitv';
 
 import { MITVHomebridgePlatform } from './platform';
-import { PLUGIN_NAME } from './settings';
 
 class KeyMap {
     private obj : {[key:string]:string} = {};

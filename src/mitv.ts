@@ -10,9 +10,9 @@ export interface ApiAdapter {
     // result()
     /**
      *
-     * @param data any
+     * @param data
      */
-    setResult(data : any) ;
+    setResult(data) ;
 }
 
 
@@ -27,13 +27,22 @@ export class AlivedAdapter implements ApiAdapter {
         };
     }
 
-    setResult(data : any) {
+    setResult(data ) {
 
+        if (typeof data.msg === 'undefined'){
+            return;
+        }
+
+        if (data.msg !== 'success'){
+            return ;
+        }
         return;
     }
 }
 
 export class EventKeyAdapter implements ApiAdapter {
+
+    private data;
     constructor(public readonly keyCode:string){
 
     }
@@ -49,9 +58,15 @@ export class EventKeyAdapter implements ApiAdapter {
         };
     }
 
-    setResult(data : any) {
+    setResult(data ) {
 
+        if (typeof data.msg === 'undefined'){
+            return;
+        }
 
+        if (data.msg !== 'success'){
+            return ;
+        }
         return;
     }
 }
@@ -71,9 +86,15 @@ export class CheckSourceAdapter implements ApiAdapter {
         };
     }
 
-    setResult(data : any) {
+    setResult(data ) {
 
+        if (typeof data.msg === 'undefined'){
+            return;
+        }
 
+        if (data.msg !== 'success'){
+            return ;
+        }
         return;
     }
 }
