@@ -12,7 +12,7 @@ export interface ApiAdapter {
      *
      * @param data
      */
-    setResult(data) ;
+    setResult(data);
 }
 
 
@@ -27,14 +27,14 @@ export class AlivedAdapter implements ApiAdapter {
         };
     }
 
-    setResult(data ) {
+    setResult(data) {
 
-        if (typeof data.msg === 'undefined'){
+        if (typeof data.msg === 'undefined') {
             return;
         }
 
-        if (data.msg !== 'success'){
-            return ;
+        if (data.msg !== 'success') {
+            return;
         }
         return;
     }
@@ -43,7 +43,7 @@ export class AlivedAdapter implements ApiAdapter {
 export class EventKeyAdapter implements ApiAdapter {
 
     private data;
-    constructor(public readonly keyCode:string){
+    constructor(public readonly keyCode: string) {
 
     }
 
@@ -58,20 +58,20 @@ export class EventKeyAdapter implements ApiAdapter {
         };
     }
 
-    setResult(data ) {
+    setResult(data) {
 
-        if (typeof data.msg === 'undefined'){
+        if (typeof data.msg === 'undefined') {
             return;
         }
 
-        if (data.msg !== 'success'){
-            return ;
+        if (data.msg !== 'success') {
+            return;
         }
         return;
     }
 }
 export class CheckSourceAdapter implements ApiAdapter {
-    constructor(public readonly source:string){
+    constructor(public readonly source: string) {
 
     }
 
@@ -86,23 +86,23 @@ export class CheckSourceAdapter implements ApiAdapter {
         };
     }
 
-    setResult(data ) {
+    setResult(data) {
 
-        if (typeof data.msg === 'undefined'){
+        if (typeof data.msg === 'undefined') {
             return;
         }
 
-        if (data.msg !== 'success'){
-            return ;
+        if (data.msg !== 'success') {
+            return;
         }
         return;
     }
 }
 
 
-async function requestData(urlObj, timeout):Promise<string>{
+async function requestData(urlObj, timeout): Promise<string> {
     timeout = timeout || 1000;
-    return new Promise((resolve, reject)=>{
+    return new Promise((resolve, reject) => {
 
         urlObj.timeout = timeout;
 
@@ -110,7 +110,7 @@ async function requestData(urlObj, timeout):Promise<string>{
         const request = http.request(urlObj, response => {
             // your callback here
 
-            response.on('data', (data)=> {
+            response.on('data', (data) => {
                 resolve(data.toString());
             });
         });
@@ -152,7 +152,7 @@ export class MIApiClient {
         const query = urlObj.searchParams;
 
         const queryObj = adaptor.query();
-        for (const k in queryObj){
+        for (const k in queryObj) {
 
             query.set(k, queryObj[k]);
         }
@@ -170,20 +170,20 @@ export class MIApiClient {
             this.logger.debug('request respose: ', data);
 
             //
-            if (data.status !== 0){
+            if (data.status !== 0) {
                 throw new Error('api error');
             }
 
-            if(typeof data.data === 'undefined'){
+            if (typeof data.data === 'undefined') {
                 data['data'] = {};
             }
             adaptor.setResult(data.data);
 
         } catch (error) {
 
-            if(error instanceof Error){
+            if (error instanceof Error) {
                 throw error;
-            }else{
+            } else {
                 throw new Error('unknow error');
             }
 
