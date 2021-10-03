@@ -79,7 +79,7 @@ export class MITVPlatformAccessory {
         this.service.updateCharacteristic(this.platform.Characteristic.ConfiguredName, accessory.context.device.title);
         this.service.updateCharacteristic(
             this.platform.Characteristic.SleepDiscoveryMode,
-            this.platform.Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE
+            this.platform.Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE,
         );
 
 
