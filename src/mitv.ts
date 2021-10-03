@@ -169,6 +169,9 @@ export class MIApiClient {
 
             this.logger.debug('request respose: ', data);
 
+            if (!data || typeof data.status === 'undefined') {
+                throw new Error('api error');
+            }
             //
             if (data.status !== 0) {
                 throw new Error('api error');
@@ -176,6 +179,7 @@ export class MIApiClient {
 
             if (typeof data.data === 'undefined') {
                 data['data'] = {};
+                data['msg'] = 'unknow error';
             }
             adaptor.setResult(data.data);
 
